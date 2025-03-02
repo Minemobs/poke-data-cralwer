@@ -26,33 +26,32 @@ async function getZHAbilityList() {
   }, {} as Record<number, Ability>)
 }
 
-async function getFRAbilityList() {
+async function getFRAbilityList(en: Record<number, Ability>) {
   const document = await getUrlDoc("https://www.pokepedia.fr/Liste_des_talents");
-  const table = document.querySelector(".tableaustandard tbody");
+  const table = document.querySelector(".tableaustandard");
   
   if(!table) {
     return {};
   }
 
-  return Array.from(table.children).reduce((list, dom) => {
-    const rows = Array.from(dom.querySelectorAll("td"))
+  return Array.from(table.querySelectorAll("tbody tr")).reduce((list, dom) => {
+    const rows = Array.from(dom.querySelectorAll("td"));
     if (!rows.length) {
       return list
     }
-
-    const [_game, no, name, _englishName, desc] = rows
-
-    if (!+(no.textContent as string)) {
+    const [_game, _no, name, englishName, desc] = rows
+    const ability = Object.values(en).find(ability => ability.name === englishName.textContent);
+    if(!ability) {
       return list
     }
-
-    list[+(no.textContent as string)] = {
-      no: +(no.textContent as string),
+    
+    list[ability.no] = {
+      no: ability.no,
       name: name.textContent as string,
-      desc: desc.textContent as string
+      desc: desc.textContent as string,
     }
     return list
-  }, {} as Record<number, Ability>)
+  }, {} as Record<number, Ability>);
 }
 
 async function getENAbilityList() {
@@ -107,7 +106,7 @@ export async function getAbilityMap(): Promise<Record<string, RegionAbility>> {
   const zh = await getZHAbilityList()
   const en = await getENAbilityList()
   const jp = await getJPAbilityList()
-  const fr = await getFRAbilityList()
+  const fr = await getFRAbilityList(en)
 
   return Object.keys(zh).reduce((obj, _no) => {
     const no = +_no
