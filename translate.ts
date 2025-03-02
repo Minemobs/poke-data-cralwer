@@ -4,9 +4,27 @@ export function t(str: string, lang: SupportLang): string {
   switch(lang) {
     case SupportLang.JP: return jp(str)
     case SupportLang.ZH: return zh(str)
+    case SupportLang.FR: return fr(str);
   }
 
   return str
+}
+
+function fr(str: string): string {
+  switch(str) {
+    case "Alola": return "Alola"
+    case "Galar": return "Galar"
+    case "Paldea": return "Paldea"
+    case "Hisui": return "Hisui"
+    case "Combat Breed": return "Race Combative"
+    case "Blaze Breed": return "Race Flamboyante"
+    case "Aqua Breed": return "Race Aquatique"
+    case "Zen Mode": return "Mode Transe"
+    case "Red-Striped": return "Motif Rouge"
+    case "Blue-Striped": return "Motif Bleu"
+    case "White-Striped": return "Motif Blanc"
+  }
+  return str;
 }
 
 function zh(str: string): string {

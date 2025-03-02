@@ -4,6 +4,7 @@ export interface Pokemon {
     en: string
     zh: string
     jp: string
+    fr: string;
   }
   no: number
   form?: PokemonForm[]
@@ -51,7 +52,7 @@ export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 export type PokemonFormTmp = Record<number, PartialBy<PokemonForm, "form">[]>
 
 export enum SupportLang {
-  EN, JP, ZH
+  EN, JP, ZH, FR
 }
 
 export interface Ability {
@@ -66,10 +67,12 @@ export interface RegionAbility {
     zh: string
     en: string
     jp: string
+    fr: string
   }
   desc: {
     zh: string
     en: string
     jp: string
+    fr: string
   }
 }

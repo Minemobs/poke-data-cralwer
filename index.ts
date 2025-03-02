@@ -8,8 +8,12 @@ import { Pokemon, PokemonIV, PokemonType, PokemonWithData, RegionAbility, Suppor
 import { getAbilityFileOutput, getAbilityMap } from "./ability.js"
 
 async function getPokemonList(): Promise<Pokemon[]> {
-  const document = await getUrlDoc("https://wiki.52poke.com/zh-hant/%E5%AE%9D%E5%8F%AF%E6%A2%A6%E5%88%97%E8%A1%A8%EF%BC%88%E6%8C%89%E5%85%A8%E5%9B%BD%E5%9B%BE%E9%89%B4%E7%BC%96%E5%8F%B7%EF%BC%89")
+  const [document, frenchDocument] = await Promise.all([
+    getUrlDoc("https://wiki.52poke.com/zh-hant/%E5%AE%9D%E5%8F%AF%E6%A2%A6%E5%88%97%E8%A1%A8%EF%BC%88%E6%8C%89%E5%85%A8%E5%9B%BD%E5%9B%BE%E9%89%B4%E7%BC%96%E5%8F%B7%EF%BC%89"),
+    getUrlDoc("https://bulbapedia.bulbagarden.net/wiki/List_of_French_Pok%C3%A9mon_names")
+  ])
   const pmList = Array.from(document.querySelectorAll(".eplist tbody tr"))
+  const frPmList = Array.from(frenchDocument.querySelectorAll(".roundtable tbody tr td:last-child"))
   const noSet = new Set<number>()
 
   return pmList.reduce((list, pm) => {
@@ -38,6 +42,7 @@ async function getPokemonList(): Promise<Pokemon[]> {
         zh: data[3].textContent?.replace("*", "") as string,
         jp: data[4].textContent as string,
         en: data[5].textContent as string,
+        fr: frPmList[no - 1].textContent as string
       },
       type
     })
@@ -131,6 +136,7 @@ function flatForm(pm: PokemonWithData[]): PokemonWithData[] {
             jp: `${_pm.name.jp} - ${__pm.form.map(f => t(f, SupportLang.JP)).join(" ")}`,
             zh: `${_pm.name.zh} - ${__pm.form.map(f => t(f, SupportLang.ZH)).join(" ")}`,
             en: `${_pm.name.en} - ${__pm.form.join(" ")}`,
+            fr: `${_pm.name.zh} - ${__pm.form.map(f => t(f, SupportLang.FR)).join(" ")}`,
           },
           no: _pm.no,
           form: undefined

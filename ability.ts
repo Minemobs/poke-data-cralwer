@@ -26,6 +26,35 @@ async function getZHAbilityList() {
   }, {} as Record<number, Ability>)
 }
 
+async function getFRAbilityList() {
+  const document = await getUrlDoc("https://www.pokepedia.fr/Liste_des_talents");
+  const table = document.querySelector(".tableaustandard tbody");
+  
+  if(!table) {
+    return {};
+  }
+
+  return Array.from(table.children).reduce((list, dom) => {
+    const rows = Array.from(dom.querySelectorAll("td"))
+    if (!rows.length) {
+      return list
+    }
+
+    const [_game, no, name, _englishName, desc] = rows
+
+    if (!+(no.textContent as string)) {
+      return list
+    }
+
+    list[+(no.textContent as string)] = {
+      no: +(no.textContent as string),
+      name: name.textContent as string,
+      desc: desc.textContent as string
+    }
+    return list
+  }, {} as Record<number, Ability>)
+}
+
 async function getENAbilityList() {
   const document = await getUrlDoc("https://bulbapedia.bulbagarden.net/wiki/Ability")
   const table = Array.from(document.querySelectorAll("h2 + table.roundy")).at(-1)
@@ -78,6 +107,7 @@ export async function getAbilityMap(): Promise<Record<string, RegionAbility>> {
   const zh = await getZHAbilityList()
   const en = await getENAbilityList()
   const jp = await getJPAbilityList()
+  const fr = await getFRAbilityList()
 
   return Object.keys(zh).reduce((obj, _no) => {
     const no = +_no
@@ -87,11 +117,13 @@ export async function getAbilityMap(): Promise<Record<string, RegionAbility>> {
         zh: zh[no]?.name || "",
         en: en[no]?.name || "",
         jp: jp[no]?.name || "",
+        fr: fr[no]?.name || "",
       },
       desc: {
         zh: zh[no]?.desc || "",
         en: en[no]?.desc || "",
         jp: jp[no]?.desc || "",
+        fr: fr[no]?.desc || "",
       }
     }
 
